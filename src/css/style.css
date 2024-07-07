@@ -1,0 +1,6 @@
+@charset "utf-8";
+@import url('./styleChecker.css');
+
+#div1{
+height: 32px;
+}
