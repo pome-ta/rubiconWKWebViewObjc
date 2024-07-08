@@ -67,6 +67,9 @@ class WebView(UIViewController,
 
     root_url = NSURL.fileURLWithPath_(str(index_path.parent))
     index_url = NSURL.fileURLWithPath_(str(index_path))
+    
+    
+    pdbr.state(index_url)
 
     self.webView.loadFileURL_allowingReadAccessToURL_(index_url, root_url)
 
@@ -74,15 +77,15 @@ class WebView(UIViewController,
     timeoutInterval = 10
 
     #myRequest = NSURLRequest.requestWithURL_cachePolicy_timeoutInterval_(index_url, cachePolicy, timeoutInterval)
+    '''
 
     site_url = 'https://www.apple.com'
-    myRequest = NSURLRequest.requestWithURL_cachePolicy_timeoutInterval_(
-      NSURL.URLWithString_(site_url), cachePolicy, timeoutInterval)
+    myRequest = NSURLRequest.requestWithURL_cachePolicy_timeoutInterval_(NSURL.URLWithString_(site_url), cachePolicy, timeoutInterval)
 
     self.webView.loadRequest_(myRequest)
     #self.webView.loadFileRequest_allowingReadAccessToURL_(myRequest, myURL)
+    '''
 
-    #pdbr.state(self.webView)
   @objc_method
   def webView_didFinishNavigation_(self, webView, navigation):
     title = webView.title
