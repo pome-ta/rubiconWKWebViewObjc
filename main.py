@@ -53,9 +53,6 @@ class WebView(UIViewController,
 
     self.webView.scrollView.refreshControl = refreshControl
 
-    #valueChanged
-    #pdbr.state(self.webView.scrollView)
-
     self.view = self.webView
 
   @objc_method
@@ -71,15 +68,20 @@ class WebView(UIViewController,
     root_url = NSURL.fileURLWithPath_(str(index_path.parent))
     index_url = NSURL.fileURLWithPath_(str(index_path))
 
+    self.webView.loadFileURL_allowingReadAccessToURL_(index_url, root_url)
+
     cachePolicy = NSURLRequestCachePolicy.reloadIgnoringLocalCacheData
     timeoutInterval = 10
 
-    myRequest = NSURLRequest.requestWithURL_cachePolicy_timeoutInterval_(
-      index_url, cachePolicy, timeoutInterval)
+    #myRequest = NSURLRequest.requestWithURL_cachePolicy_timeoutInterval_(index_url, cachePolicy, timeoutInterval)
 
-    #self.webView.loadRequest_(myRequest)
+    site_url = 'https://www.apple.com'
+    myRequest = NSURLRequest.requestWithURL_cachePolicy_timeoutInterval_(
+      NSURL.URLWithString_(site_url), cachePolicy, timeoutInterval)
+
+    self.webView.loadRequest_(myRequest)
     #self.webView.loadFileRequest_allowingReadAccessToURL_(myRequest, myURL)
-    self.webView.loadFileURL_allowingReadAccessToURL_(index_url, root_url)
+
     #pdbr.state(self.webView)
   @objc_method
   def webView_didFinishNavigation_(self, webView, navigation):
@@ -88,7 +90,7 @@ class WebView(UIViewController,
 
   @objc_method
   def refreshWebView_(self, sender):
-    pdbr.state(sender)
+
     self.webView.reload()
     sender.endRefreshing()
 
