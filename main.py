@@ -50,19 +50,21 @@ class WebView(UIViewController,
 
     self.view.backgroundColor = UIColor.systemDarkRedColor()
 
-    file_path = str(Path('./src/index.html'))
+    index_path = Path('./src/index.html')
 
-    myURL = NSURL.fileURLWithPath_(file_path)
+    root_url = NSURL.fileURLWithPath_(str(index_path.parent))
+    index_url = NSURL.fileURLWithPath_(str(index_path))
 
     cachePolicy = NSURLRequestCachePolicy.reloadIgnoringLocalCacheData
-    timeoutInterval = 100
+    timeoutInterval = 10
 
     myRequest = NSURLRequest.requestWithURL_cachePolicy_timeoutInterval_(
-      myURL, cachePolicy, timeoutInterval)
+      index_url, cachePolicy, timeoutInterval)
 
-    self.webView.loadRequest_(myRequest)
-    #self.webView.reload()
-    #pdbr.state(self.webView)
+    #self.webView.loadRequest_(myRequest)
+    #self.webView.loadFileRequest_allowingReadAccessToURL_(myRequest, myURL)
+    self.webView.loadFileURL_allowingReadAccessToURL_(index_url,root_url)
+    pdbr.state(self.webView)
 
   @objc_method
   def webView_didFinishNavigation_(self, webView, navigation):
@@ -78,3 +80,4 @@ if __name__ == '__main__':
   main_vc = WebView.new()
 
   present_viewController(main_vc)
+
