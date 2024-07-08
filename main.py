@@ -1,11 +1,13 @@
 from pathlib import Path
 
 from pyrubicon.objc.api import ObjCClass, ObjCInstance, ObjCProtocol, objc_method, objc_property
-from pyrubicon.objc.runtime import send_super, load_library
+from pyrubicon.objc.runtime import SEL, send_super, load_library
 from pyrubicon.objc.types import NSInteger, CGRect
 
 from rbedge.enumerations import (
-  NSURLRequestCachePolicy, )
+  NSURLRequestCachePolicy,
+  UIControlEvents,
+)
 from rbedge.functions import NSStringFromClass
 
 UIViewController = ObjCClass('UIViewController')
@@ -20,6 +22,8 @@ NSURLRequest = ObjCClass('NSURLRequest')
 # --- WKWebView
 WKWebView = ObjCClass('WKWebView')
 WKWebViewConfiguration = ObjCClass('WKWebViewConfiguration')
+
+UIRefreshControl = ObjCClass('UIRefreshControl')
 
 WKUIDelegate = ObjCProtocol('WKUIDelegate')
 WKNavigationDelegate = ObjCProtocol('WKNavigationDelegate')
@@ -40,6 +44,18 @@ class WebView(UIViewController,
       CGRectZero, webConfiguration)
     self.webView.uiDelegate = self
     self.webView.navigationDelegate = self
+
+    self.webView.scrollView.bounces = True
+    refreshControl = UIRefreshControl.new()
+
+    refreshControl.addTarget_action_forControlEvents_(
+      self, SEL('refreshWebView:'), UIControlEvents.valueChanged)
+
+    self.webView.scrollView.refreshControl = refreshControl
+
+    #valueChanged
+    #pdbr.state(self.webView.scrollView)
+
     self.view = self.webView
 
   @objc_method
@@ -63,13 +79,18 @@ class WebView(UIViewController,
 
     #self.webView.loadRequest_(myRequest)
     #self.webView.loadFileRequest_allowingReadAccessToURL_(myRequest, myURL)
-    self.webView.loadFileURL_allowingReadAccessToURL_(index_url,root_url)
-    pdbr.state(self.webView)
-
+    self.webView.loadFileURL_allowingReadAccessToURL_(index_url, root_url)
+    #pdbr.state(self.webView)
   @objc_method
   def webView_didFinishNavigation_(self, webView, navigation):
     title = webView.title
     self.navigationItem.title = str(title)
+
+  @objc_method
+  def refreshWebView_(self, sender):
+    pdbr.state(sender)
+    self.webView.reload()
+    sender.endRefreshing()
 
 
 if __name__ == '__main__':
