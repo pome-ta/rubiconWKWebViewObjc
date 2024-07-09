@@ -22,6 +22,8 @@ NSURLRequest = ObjCClass('NSURLRequest')
 # --- WKWebView
 WKWebView = ObjCClass('WKWebView')
 WKWebViewConfiguration = ObjCClass('WKWebViewConfiguration')
+WKWebsiteDataStore = ObjCClass('WKWebsiteDataStore')
+WKUserContentController = ObjCClass('WKUserContentController')
 
 UIRefreshControl = ObjCClass('UIRefreshControl')
 
@@ -40,6 +42,15 @@ class WebView(UIViewController,
   @objc_method
   def loadView(self):
     webConfiguration = WKWebViewConfiguration.new()
+    #pdbr.state(WKUserContentController)
+    websiteDataStore = WKWebsiteDataStore.nonPersistentDataStore()
+    webConfiguration.websiteDataStore = websiteDataStore
+
+    userContentController = WKUserContentController.new()
+    webConfiguration.userContentController = userContentController
+    webConfiguration.preferences.javaScriptEnabled=True
+    pdbr.state(webConfiguration)
+
     self.webView = WKWebView.alloc().initWithFrame_configuration_(
       CGRectZero, webConfiguration)
     self.webView.uiDelegate = self
@@ -63,20 +74,30 @@ class WebView(UIViewController,
 
     self.view.backgroundColor = UIColor.systemDarkRedColor()
 
-    index_path = Path('./src/index.html')
+    root_path = Path('./src').resolve()
+    #file:///private/var/mobile/Containers/Shared/AppGroup/CD0D241D-A767-4CE7-823D-680C601C49D6/File%20Provider%20Storage/Repositories/rubiconWKWebViewObjc/
 
-    root_url = NSURL.fileURLWithPath_(str(index_path.parent))
-    index_url = NSURL.fileURLWithPath_(str(index_path))
-    
-    
-    pdbr.state(index_url)
+    root_url = NSURL.fileURLWithPath_isDirectory_(str(root_path), True)
+    #root_url = NSURL.fileURLWithPath_isDirectory_('file:///private/var/mobile/Containers/Shared/AppGroup/CD0D241D-A767-4CE7-823D-680C601C49D6/File%20Provider%20Storage/Repositories/rubiconWKWebViewObjc', True)
+
+    index_url = NSURL.fileURLWithPath_isDirectory_(
+      str(root_path / Path('index.html')), False)
+
+    #pdbr.state(root_url)
+    #pdbr.state(NSURL)
+    #print(str(root_path))
+    #print(index_url)
+    #pdbr.state(WKWebsiteDataStore)
 
     self.webView.loadFileURL_allowingReadAccessToURL_(index_url, root_url)
 
     cachePolicy = NSURLRequestCachePolicy.reloadIgnoringLocalCacheData
     timeoutInterval = 10
 
-    #myRequest = NSURLRequest.requestWithURL_cachePolicy_timeoutInterval_(index_url, cachePolicy, timeoutInterval)
+    myRequest = NSURLRequest.requestWithURL_cachePolicy_timeoutInterval_(
+      index_url, cachePolicy, timeoutInterval)
+
+    #self.webView.loadFileRequest_allowingReadAccessToURL_(myRequest, root_url)
     '''
 
     site_url = 'https://www.apple.com'
