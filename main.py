@@ -42,14 +42,23 @@ class WebView(UIViewController,
   @objc_method
   def loadView(self):
     webConfiguration = WKWebViewConfiguration.new()
+    
     #pdbr.state(WKUserContentController)
     websiteDataStore = WKWebsiteDataStore.nonPersistentDataStore()
     webConfiguration.websiteDataStore = websiteDataStore
+    '''
 
     userContentController = WKUserContentController.new()
     webConfiguration.userContentController = userContentController
     webConfiguration.preferences.javaScriptEnabled=True
-    pdbr.state(webConfiguration)
+    webConfiguration.limitsNavigationsToAppBoundDomains = True
+    webConfiguration.isInspectable = True
+    '''
+    
+    
+    
+    webConfiguration.preferences.setValue_forKey_(True, 'allowFileAccessFromFileURLs')
+    #pdbr.state(webConfiguration.preferences)
 
     self.webView = WKWebView.alloc().initWithFrame_configuration_(
       CGRectZero, webConfiguration)
