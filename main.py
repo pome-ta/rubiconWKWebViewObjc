@@ -49,6 +49,8 @@ class WebViewController(UIViewController,
     webConfiguration.preferences.setValue_forKey_(
       True, 'allowFileAccessFromFileURLs')
 
+    #print(webConfiguration.preferences)
+    #pdbr.state(webConfiguration.preferences)
     self.webView = WKWebView.alloc().initWithFrame_configuration_(
       CGRectZero, webConfiguration)
     #self.webView.uiDelegate = self
@@ -96,7 +98,8 @@ class WebViewController(UIViewController,
   @objc_method
   def webView_didCommitNavigation_(self, webView, navigation):
     # 遷移開始時
-    print('didCommitNavigation')
+    #print('didCommitNavigation')
+    pass
 
   @objc_method
   def webView_didFailNavigation_withError_(self, webView, navigation, error):
@@ -115,7 +118,7 @@ class WebViewController(UIViewController,
   @objc_method
   def webView_didFinishNavigation_(self, webView, navigation):
     # ページ読み込みが完了した時
-    print('didFinishNavigation')
+    #print('didFinishNavigation')
     title = webView.title
     self.navigationItem.title = str(title)
 
@@ -137,7 +140,8 @@ class WebViewController(UIViewController,
   @objc_method
   def webView_didStartProvisionalNavigation_(self, webView, navigation):
     # ページ読み込みが開始された時
-    print('didStartProvisionalNavigation')
+    #print('didStartProvisionalNavigation')
+    pass
 
 
 if __name__ == '__main__':
