@@ -31,34 +31,23 @@ WKUIDelegate = ObjCProtocol('WKUIDelegate')
 WKNavigationDelegate = ObjCProtocol('WKNavigationDelegate')
 
 
-class WebView(UIViewController,
-              protocols=[
-                WKUIDelegate,
-                WKNavigationDelegate,
-              ]):
+class WebViewController(UIViewController,
+                        protocols=[
+                          WKUIDelegate,
+                          WKNavigationDelegate,
+                        ]):
 
   webView: WKWebView = objc_property()
+  targetURL: Path | str = Path('./src/index.html')
 
   @objc_method
   def loadView(self):
     webConfiguration = WKWebViewConfiguration.new()
-    
-    #pdbr.state(WKUserContentController)
     websiteDataStore = WKWebsiteDataStore.nonPersistentDataStore()
-    webConfiguration.websiteDataStore = websiteDataStore
-    '''
 
-    userContentController = WKUserContentController.new()
-    webConfiguration.userContentController = userContentController
-    webConfiguration.preferences.javaScriptEnabled=True
-    webConfiguration.limitsNavigationsToAppBoundDomains = True
-    webConfiguration.isInspectable = True
-    '''
-    
-    
-    
-    webConfiguration.preferences.setValue_forKey_(True, 'allowFileAccessFromFileURLs')
-    #pdbr.state(webConfiguration.preferences)
+    webConfiguration.websiteDataStore = websiteDataStore
+    webConfiguration.preferences.setValue_forKey_(
+      True, 'allowFileAccessFromFileURLs')
 
     self.webView = WKWebView.alloc().initWithFrame_configuration_(
       CGRectZero, webConfiguration)
@@ -66,13 +55,12 @@ class WebView(UIViewController,
     self.webView.navigationDelegate = self
 
     self.webView.scrollView.bounces = True
-    refreshControl = UIRefreshControl.new()
 
+    refreshControl = UIRefreshControl.new()
     refreshControl.addTarget_action_forControlEvents_(
       self, SEL('refreshWebView:'), UIControlEvents.valueChanged)
 
     self.webView.scrollView.refreshControl = refreshControl
-
     self.view = self.webView
 
   @objc_method
@@ -80,41 +68,24 @@ class WebView(UIViewController,
     send_super(__class__, self, 'viewDidLoad')  # xxx: 不要?
     title = NSStringFromClass(__class__)
     self.navigationItem.title = title
-
     self.view.backgroundColor = UIColor.systemDarkRedColor()
 
-    root_path = Path('./src').resolve()
-    #file:///private/var/mobile/Containers/Shared/AppGroup/CD0D241D-A767-4CE7-823D-680C601C49D6/File%20Provider%20Storage/Repositories/rubiconWKWebViewObjc/
+    # --- load url
+    if (Path(self.targetURL).exists()):
+      target_path = Path(self.targetURL)
+      fileURLWithPath = NSURL.fileURLWithPath_isDirectory_
+      folder_path = fileURLWithPath(str(target_path.parent), True)
+      index_path = fileURLWithPath(str(target_path), False)
+      self.webView.loadFileURL_allowingReadAccessToURL_(
+        index_path, folder_path)
+    else:
+      url = NSURL.URLWithString_(self.targetURL)
+      cachePolicy = NSURLRequestCachePolicy.reloadIgnoringLocalCacheData
+      timeoutInterval = 10
+      request = NSURLRequest.requestWithURL_cachePolicy_timeoutInterval_(
+        url, cachePolicy, timeoutInterval)
 
-    root_url = NSURL.fileURLWithPath_isDirectory_(str(root_path), True)
-    #root_url = NSURL.fileURLWithPath_isDirectory_('file:///private/var/mobile/Containers/Shared/AppGroup/CD0D241D-A767-4CE7-823D-680C601C49D6/File%20Provider%20Storage/Repositories/rubiconWKWebViewObjc', True)
-
-    index_url = NSURL.fileURLWithPath_isDirectory_(
-      str(root_path / Path('index.html')), False)
-
-    #pdbr.state(root_url)
-    #pdbr.state(NSURL)
-    #print(str(root_path))
-    #print(index_url)
-    #pdbr.state(WKWebsiteDataStore)
-
-    self.webView.loadFileURL_allowingReadAccessToURL_(index_url, root_url)
-
-    cachePolicy = NSURLRequestCachePolicy.reloadIgnoringLocalCacheData
-    timeoutInterval = 10
-
-    myRequest = NSURLRequest.requestWithURL_cachePolicy_timeoutInterval_(
-      index_url, cachePolicy, timeoutInterval)
-
-    #self.webView.loadFileRequest_allowingReadAccessToURL_(myRequest, root_url)
-    '''
-
-    site_url = 'https://www.apple.com'
-    myRequest = NSURLRequest.requestWithURL_cachePolicy_timeoutInterval_(NSURL.URLWithString_(site_url), cachePolicy, timeoutInterval)
-
-    self.webView.loadRequest_(myRequest)
-    #self.webView.loadFileRequest_allowingReadAccessToURL_(myRequest, myURL)
-    '''
+      self.webView.loadRequest_(request)
 
   @objc_method
   def webView_didFinishNavigation_(self, webView, navigation):
@@ -123,7 +94,6 @@ class WebView(UIViewController,
 
   @objc_method
   def refreshWebView_(self, sender):
-
     self.webView.reload()
     sender.endRefreshing()
 
@@ -133,7 +103,11 @@ if __name__ == '__main__':
   from rbedge import present_viewController
   from rbedge import pdbr
 
-  main_vc = WebView.new()
+  target_url = Path('./src/index.html')
+  #target_url = 'https://www.apple.com'
+
+  main_vc = WebViewController.new()
+  main_vc.targetURL = target_url
 
   present_viewController(main_vc)
 
