@@ -276,6 +276,7 @@ class UIViewAutoresizing:
   flexibleBottomMargin: int = 1 << 5
 
 
+# ref: [NSURLRequestCachePolicy | Apple Developer Documentation](https://developer.apple.com/documentation/foundation/nsurlrequestcachepolicy)
 @dataclass
 class NSURLRequestCachePolicy:
   useProtocolCachePolicy: int = 0
@@ -285,4 +286,12 @@ class NSURLRequestCachePolicy:
   returnCacheDataElseLoad: int = 2
   returnCacheDataDontLoad: int = 3
   reloadRevalidatingCacheData: int = 5
+
+
+# ref: [WKNavigationActionPolicy | Apple Developer Documentation](https://developer.apple.com/documentation/webkit/wknavigationactionpolicy?language=objc)
+@dataclass
+class WKNavigationActionPolicy:
+  cancel: int = 0
+  allow: int = 1
+  download: int = 2
 

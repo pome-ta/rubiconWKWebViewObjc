@@ -1,12 +1,13 @@
 from pathlib import Path
 
-from pyrubicon.objc.api import ObjCClass, ObjCInstance, ObjCProtocol, objc_method, objc_property
-from pyrubicon.objc.runtime import SEL, send_super, load_library
+from pyrubicon.objc.api import ObjCClass, ObjCInstance, ObjCProtocol, objc_method, objc_property, Block
+from pyrubicon.objc.runtime import SEL, send_super, load_library, objc_id
 from pyrubicon.objc.types import NSInteger, CGRect
 
 from rbedge.enumerations import (
   NSURLRequestCachePolicy,
   UIControlEvents,
+  WKNavigationActionPolicy,
 )
 from rbedge.functions import NSStringFromClass
 
@@ -23,7 +24,6 @@ NSURLRequest = ObjCClass('NSURLRequest')
 WKWebView = ObjCClass('WKWebView')
 WKWebViewConfiguration = ObjCClass('WKWebViewConfiguration')
 WKWebsiteDataStore = ObjCClass('WKWebsiteDataStore')
-WKUserContentController = ObjCClass('WKUserContentController')
 
 UIRefreshControl = ObjCClass('UIRefreshControl')
 
@@ -51,7 +51,7 @@ class WebViewController(UIViewController,
 
     self.webView = WKWebView.alloc().initWithFrame_configuration_(
       CGRectZero, webConfiguration)
-    self.webView.uiDelegate = self
+    #self.webView.uiDelegate = self
     self.webView.navigationDelegate = self
 
     self.webView.scrollView.bounces = True
@@ -88,14 +88,64 @@ class WebViewController(UIViewController,
       self.webView.loadRequest_(request)
 
   @objc_method
+  def refreshWebView_(self, sender):
+    self.webView.reload()
+    sender.endRefreshing()
+
+  # --- WKNavigationDelegate
+  '''
+  @objc_method
+  def webView_decidePolicyForNavigationAction_decisionHandler_(self, webView, navigationAction, decisionHandler:objc_id):
+    print('dud')
+    #h=Block(decisionHandler, NSUInteger, NSInteger)
+    #h(WKNavigationActionPolicy.allow)
+  '''
+
+  @objc_method
+  def webView_didCommitNavigation_(self, webView, navigation):
+    # 遷移開始時
+    print('didCommitNavigation')
+
+  @objc_method
+  def webView_didFailNavigation_withError_(self, webView, navigation, error):
+    # 遷移中にエラーが発生した時
+    # xxx: 未確認
+    print('didFailNavigation_withError')
+    print(error)
+
+  @objc_method
+  def webView_didFailProvisionalNavigation_withError_(self, webView,
+                                                      navigation, error):
+    # ページ読み込み時にエラーが発生した時
+    print('didFailProvisionalNavigation_withError')
+    print(error)
+
+  @objc_method
   def webView_didFinishNavigation_(self, webView, navigation):
+    # ページ読み込みが完了した時
+    print('didFinishNavigation')
     title = webView.title
     self.navigationItem.title = str(title)
 
   @objc_method
-  def refreshWebView_(self, sender):
-    self.webView.reload()
-    sender.endRefreshing()
+  def webView_didReceiveAuthenticationChallenge_completionHandler_(
+      self, webView, challenge, completionHandler):
+    # 認証が必要な時
+    # xxx: 未確認
+    print('didReceiveAuthenticationChallenge_completionHandler')
+    print(completionHandler)
+
+  @objc_method
+  def webView_didReceiveServerRedirectForProvisionalNavigation_(
+      self, webView, navigation):
+    # リダイレクトされた時
+    # xxx: 未確認
+    print('didReceiveServerRedirectForProvisionalNavigation')
+
+  @objc_method
+  def webView_didStartProvisionalNavigation_(self, webView, navigation):
+    # ページ読み込みが開始された時
+    print('didStartProvisionalNavigation')
 
 
 if __name__ == '__main__':
@@ -104,7 +154,7 @@ if __name__ == '__main__':
   from rbedge import pdbr
 
   target_url = Path('./src/index.html')
-  #target_url = 'https://www.apple.com'
+  #target_url = 'https://www.apple.cox'
 
   main_vc = WebViewController.new()
   main_vc.targetURL = target_url
