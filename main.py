@@ -93,14 +93,6 @@ class WebViewController(UIViewController,
     sender.endRefreshing()
 
   # --- WKNavigationDelegate
-  '''
-  @objc_method
-  def webView_decidePolicyForNavigationAction_decisionHandler_(self, webView, navigationAction, decisionHandler:objc_id):
-    print('dud')
-    #h=Block(decisionHandler, NSUInteger, NSInteger)
-    #h(WKNavigationActionPolicy.allow)
-  '''
-
   @objc_method
   def webView_didCommitNavigation_(self, webView, navigation):
     # 遷移開始時
