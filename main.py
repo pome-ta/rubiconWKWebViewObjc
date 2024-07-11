@@ -1,13 +1,12 @@
 from pathlib import Path
 
-from pyrubicon.objc.api import ObjCClass, ObjCInstance, ObjCProtocol, objc_method, objc_property, Block
+from pyrubicon.objc.api import ObjCClass, ObjCProtocol, objc_method, objc_property
 from pyrubicon.objc.runtime import SEL, send_super, load_library, objc_id
-from pyrubicon.objc.types import NSInteger, CGRect
+from pyrubicon.objc.types import CGRect
 
 from rbedge.enumerations import (
   NSURLRequestCachePolicy,
   UIControlEvents,
-  WKNavigationActionPolicy,
 )
 from rbedge.functions import NSStringFromClass
 
@@ -49,8 +48,6 @@ class WebViewController(UIViewController,
     webConfiguration.preferences.setValue_forKey_(
       True, 'allowFileAccessFromFileURLs')
 
-    #print(webConfiguration.preferences)
-    #pdbr.state(webConfiguration.preferences)
     self.webView = WKWebView.alloc().initWithFrame_configuration_(
       CGRectZero, webConfiguration)
     #self.webView.uiDelegate = self
