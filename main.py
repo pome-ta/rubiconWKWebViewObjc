@@ -119,6 +119,7 @@ class WebViewController(UIViewController,
     title = webView.title
     self.navigationItem.title = str(title)
 
+  '''
   @objc_method
   def webView_didReceiveAuthenticationChallenge_completionHandler_(
       self, webView, challenge, completionHandler):
@@ -126,6 +127,7 @@ class WebViewController(UIViewController,
     # xxx: 未確認
     print('didReceiveAuthenticationChallenge_completionHandler')
     print(completionHandler)
+  '''
 
   @objc_method
   def webView_didReceiveServerRedirectForProvisionalNavigation_(
