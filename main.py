@@ -61,6 +61,7 @@ class WebViewController(UIViewController,
 
     self.webView.scrollView.refreshControl = refreshControl
     self.view = self.webView
+    pdbr.state(self.webView)
 
   @objc_method
   def viewDidLoad(self):
@@ -148,8 +149,8 @@ if __name__ == '__main__':
   from rbedge import present_viewController
   from rbedge import pdbr
 
-  target_url = Path('./src/index.html')
-  #target_url = 'https://www.apple.cox'
+  #target_url = Path('./src/index.html')
+  target_url = 'https://www.apple.com'
 
   main_vc = WebViewController.new()
   main_vc.targetURL = target_url
