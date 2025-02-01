@@ -41,6 +41,7 @@ class WebViewController(UIViewController,
 
   @objc_method
   def loadView(self):
+    send_super(__class__, self, 'loadView')
     webConfiguration = WKWebViewConfiguration.new()
     websiteDataStore = WKWebsiteDataStore.nonPersistentDataStore()
 
@@ -61,7 +62,7 @@ class WebViewController(UIViewController,
 
     self.webView.scrollView.refreshControl = refreshControl
     self.view = self.webView
-    pdbr.state(self.webView)
+    #pdbr.state(self.webView)
 
   @objc_method
   def viewDidLoad(self):
@@ -146,14 +147,16 @@ class WebViewController(UIViewController,
 
 if __name__ == '__main__':
   from rbedge.enumerations import UIModalPresentationStyle
-  from rbedge import present_viewController
+  from rbedge.app import App
   from rbedge import pdbr
 
-  #target_url = Path('./src/index.html')
-  target_url = 'https://www.apple.com'
+  target_url = Path('./src/index.html')
+  #target_url = 'https://www.apple.com'
 
   main_vc = WebViewController.new()
   main_vc.targetURL = target_url
+  app = App(main_vc)
 
-  present_viewController(main_vc)
+  presentation_style = UIModalPresentationStyle.fullScreen
+  app.main_loop(presentation_style)
 
