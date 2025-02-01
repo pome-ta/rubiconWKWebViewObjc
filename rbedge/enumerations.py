@@ -857,7 +857,7 @@ class UIImagePickerControllerSourceType:
   photoLibrary: int = 0  # todo: deprecated
   camera: int = 1
   savedPhotosAlbum: int = 2  # todo: deprecated
-  
+
 
 # ref: [NSURLRequestCachePolicy | Apple Developer Documentation](https://developer.apple.com/documentation/foundation/nsurlrequestcachepolicy)
 @dataclass
@@ -877,4 +877,4 @@ class WKNavigationActionPolicy:
   cancel: int = 0
   allow: int = 1
   download: int = 2
-  
+
